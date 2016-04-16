@@ -23,11 +23,12 @@ from .query_integral_image import query_integral_image
 
 item1 = itemgetter(1)
 
-FONT_PATH = os.environ.get("FONT_PATH", os.path.join(os.path.dirname(__file__),
-                                                     "DroidSansMono.ttf"))
+# FONT_PATH = os.environ.get("FONT_PATH", os.path.join(os.path.dirname(__file__),
+#                                                     "DroidSansMono.ttf"))
+FONT_PATH = os.environ.get("FONT_PATH", os.path.join("/Library/fonts",
+                                                     "Arial.ttf"))
 STOPWORDS = set([x.strip() for x in open(os.path.join(os.path.dirname(__file__),
                                                       'stopwords')).read().split('\n')])
-
 
 class IntegralOccupancyMap(object):
     def __init__(self, height, width, mask):
@@ -199,11 +200,14 @@ class WordCloud(object):
     scaling heuristic.
     """
 
-    def __init__(self, font_path=None, width=400, height=200, margin=2,
+    def __init__(self, font_path=None, width=1139, height=926, margin=2,
                  ranks_only=None, prefer_horizontal=0.9, mask=None, scale=1,
                  color_func=random_color_func, max_words=200, min_font_size=4,
                  stopwords=None, random_state=None, background_color='black',
                  max_font_size=None, font_step=1, mode="RGB", relative_scaling=0, regexp=None):
+        print("<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 %d %d' width='%d' height='%d'>" % (width, height, width, height))
+        print("<g font-family='Arial' fill='#000'>")
+
         if font_path is None:
             font_path = FONT_PATH
         self.font_path = font_path
@@ -315,6 +319,7 @@ class WordCloud(object):
         for word, freq in frequencies:
             # select the font size
             rs = self.relative_scaling
+            orientation = None
             if rs != 0:
                 font_size = int(round((rs * (freq / float(last_freq)) + (1 - rs)) * font_size))
             while True:
@@ -345,6 +350,10 @@ class WordCloud(object):
             x, y = np.array(result) + self.margin // 2
             # actually draw the text
             draw.text((y, x), word, fill="white", font=transposed_font)
+            if orientation == Image.ROTATE_90:
+                print("<text x='-%d' y='%d' dominant-baseline='hanging' text-anchor='end' transform='rotate(-90)' font-size='%d'>%s</text>" % (x, y, font_size, word))
+            else:
+                print("<text x='%d' y='%d' dominant-baseline='hanging' font-size='%d'>%s</text>" % (y, x, font_size, word))
             positions.append((x, y))
             orientations.append(orientation)
             font_sizes.append(font_size)
@@ -364,6 +373,7 @@ class WordCloud(object):
             last_freq = freq
 
         self.layout_ = list(zip(frequencies, font_sizes, positions, orientations, colors))
+        print("</g></svg>")
         return self
 
     def process_text(self, text):
