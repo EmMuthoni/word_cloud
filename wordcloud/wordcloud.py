@@ -25,8 +25,8 @@ item1 = itemgetter(1)
 
 # FONT_PATH = os.environ.get("FONT_PATH", os.path.join(os.path.dirname(__file__),
 #                                                     "DroidSansMono.ttf"))
-FONT_PATH = os.environ.get("FONT_PATH", os.path.join("/Library/fonts",
-                                                     "Arial.ttf"))
+FONT_PATH = os.environ.get("FONT_PATH", os.path.join("/Users/njero/Library/Fonts/",
+                                                     "BebasNeue-webfont.ttf"))
 STOPWORDS = set([x.strip() for x in open(os.path.join(os.path.dirname(__file__),
                                                       'stopwords')).read().split('\n')])
 
@@ -200,13 +200,16 @@ class WordCloud(object):
     scaling heuristic.
     """
 
-    def __init__(self, font_path=None, width=1139, height=926, margin=2,
+    def __init__(self, font_path=None, width=1139, height=926, margin=8,
                  ranks_only=None, prefer_horizontal=0.9, mask=None, scale=1,
-                 color_func=random_color_func, max_words=200, min_font_size=4,
+                 color_func=random_color_func, max_words=200, min_font_size=8,
                  stopwords=None, random_state=None, background_color='black',
-                 max_font_size=None, font_step=1, mode="RGB", relative_scaling=0, regexp=None):
-        print("<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 %d %d' width='%d' height='%d'>" % (width, height, width, height))
-        print("<g font-family='Arial' fill='#000'>")
+                 max_font_size=120, font_step=1, mode="RGB", relative_scaling=0,
+                 color='#8e0000', font_name='Bebas Neue', regexp=None):
+        print("<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 %d %d' width='100%%'>" % (width, height))
+        print("<g font-family='%s' fill='%s'>" % (font_name, color))
+        # 8e592e brown
+        # #0084b4 twitter
 
         if font_path is None:
             font_path = FONT_PATH
@@ -351,9 +354,9 @@ class WordCloud(object):
             # actually draw the text
             draw.text((y, x), word, fill="white", font=transposed_font)
             if orientation == Image.ROTATE_90:
-                print("<text x='-%d' y='%d' dominant-baseline='hanging' text-anchor='end' transform='rotate(-90)' font-size='%d'>%s</text>" % (x, y, font_size, word))
+                print("<text x='-%d' y='%d' text-anchor='end' transform='rotate(-90)' font-size='%d'><tspan dy='%d'>%s</tspan></text>" % (x, y, font_size, font_size * 0.71, word))
             else:
-                print("<text x='%d' y='%d' dominant-baseline='hanging' font-size='%d'>%s</text>" % (y, x, font_size, word))
+                print("<text x='%d' y='%d' font-size='%d'><tspan dy='%d'>%s</tspan></text>" % (y, x, font_size, font_size * 0.71, word))
             positions.append((x, y))
             orientations.append(orientation)
             font_sizes.append(font_size)
